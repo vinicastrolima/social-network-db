@@ -155,3 +155,10 @@ SELECT * FROM vw_ranking ORDER BY position;
 ```
 
 Depois da solução aceita, a Ana fica com 115 pontos: 10 pela participação, 5 pelo envio e 100 pelo desafio.
+
+## Contribuidores
+
+- [Lucas Raphael](https://github.com/LucasRaphael3)
+- [Izabelle Luna](https://github.com/zabeluna)
+- [Joseph Cavalcante](https://github.com/usrJosephC)
+- [Anthony Gabriel](https://github.com/AnthonyGabrielAA)
