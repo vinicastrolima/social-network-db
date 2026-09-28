@@ -1,0 +1,248 @@
+//// Rede social de desenvolvedores
+//// Importe este arquivo em https://dbdiagram.io (Import > Import from DBML)
+//// SGBD alvo: PostgreSQL
+
+Project social_network {
+  database_type: 'PostgreSQL'
+  Note: '''
+  Rede social com cadastro pessoal e profissional, postagens,
+  amizades, seguidores, mensagens, grupos, desafios e ranking.
+  '''
+}
+
+Table users {
+  id bigserial [pk, increment]
+  username varchar(50) [not null, unique, note: 'Identificador público']
+  email varchar(255) [not null, unique]
+  password_hash varchar(255) [not null, note: 'Somente o hash da senha']
+  full_name varchar(150) [not null]
+  birth_date date [note: 'Dado pessoal']
+  phone varchar(20)
+  bio text
+  avatar_url varchar(500)
+  city varchar(100) [note: 'Dado pessoal']
+  state varchar(100)
+  country varchar(100)
+  job_title varchar(150) [note: 'Dado profissional']
+  company varchar(150) [note: 'Dado profissional']
+  education varchar(200) [note: 'Dado profissional']
+  website varchar(500)
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+
+  Note: 'Cadastro de usuários com informações pessoais e profissionais.'
+}
+
+Table skills {
+  id bigserial [pk, increment]
+  name varchar(80) [not null, unique]
+  category varchar(30) [not null, note: 'linguagem, framework, banco_de_dados, ferramenta ou outra']
+  created_at timestamptz [not null]
+
+  Note: 'Catálogo de habilidades de programação.'
+}
+
+Table user_skills {
+  user_id bigint [not null, ref: > users.id]
+  skill_id bigint [not null, ref: > skills.id]
+  proficiency_level varchar(20) [not null, note: 'iniciante, intermediario, avancado ou especialista']
+  years_of_experience numeric(4,1)
+  created_at timestamptz [not null]
+
+  indexes {
+    (user_id, skill_id) [pk]
+  }
+
+  Note: 'Habilidades listadas por cada usuário.'
+}
+
+Table friends {
+  id bigserial [pk, increment]
+  requester_id bigint [not null, ref: > users.id]
+  addressee_id bigint [not null, ref: > users.id]
+  status varchar(20) [not null, note: 'pendente, aceita, recusada ou bloqueada']
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+
+  Note: 'Conexão de amizade entre dois usuários.'
+}
+
+Table follows {
+  follower_id bigint [not null, ref: > users.id]
+  following_id bigint [not null, ref: > users.id]
+  created_at timestamptz [not null]
+
+  indexes {
+    (follower_id, following_id) [pk]
+  }
+
+  Note: 'Usuário segue outro para acompanhar as postagens.'
+}
+
+Table groups {
+  id bigserial [pk, increment]
+  name varchar(120) [not null, unique]
+  description text
+  topic varchar(80) [not null, note: 'Linguagem ou tecnologia']
+  created_by bigint [ref: > users.id]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+
+  Note: 'Grupo temático sobre uma linguagem ou tecnologia.'
+}
+
+Table group_members {
+  group_id bigint [not null, ref: > groups.id]
+  user_id bigint [not null, ref: > users.id]
+  role varchar(20) [not null, note: 'admin, moderador ou membro']
+  joined_at timestamptz [not null]
+
+  indexes {
+    (group_id, user_id) [pk]
+  }
+
+  Note: 'Participação dos usuários nos grupos.'
+}
+
+Table posts {
+  id bigserial [pk, increment]
+  user_id bigint [not null, ref: > users.id]
+  group_id bigint [ref: > groups.id, note: 'Nulo = postagem de perfil; preenchido = postagem do grupo']
+  content text [not null]
+  link_url varchar(500)
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+
+  Note: 'Postagem com texto e link opcional, no perfil ou em um grupo.'
+}
+
+Table comments {
+  id bigserial [pk, increment]
+  post_id bigint [not null, ref: > posts.id]
+  user_id bigint [not null, ref: > users.id]
+  parent_comment_id bigint [ref: > comments.id]
+  content text [not null]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+
+  Note: 'Comentários e respostas nas postagens.'
+}
+
+Table likes {
+  id bigserial [pk, increment]
+  user_id bigint [not null, ref: > users.id]
+  post_id bigint [ref: > posts.id]
+  comment_id bigint [ref: > comments.id]
+  created_at timestamptz [not null]
+
+  Note: 'Curtida em uma postagem ou em um comentário, nunca nos dois ao mesmo tempo.'
+}
+
+Table conversations {
+  id bigserial [pk, increment]
+  user_low_id bigint [not null, ref: > users.id]
+  user_high_id bigint [not null, ref: > users.id]
+  created_at timestamptz [not null]
+
+  indexes {
+    (user_low_id, user_high_id) [unique]
+  }
+
+  Note: 'Conversa privada única entre dois usuários.'
+}
+
+Table messages {
+  id bigserial [pk, increment]
+  conversation_id bigint [not null, ref: > conversations.id]
+  sender_id bigint [not null, ref: > users.id]
+  content text [not null]
+  read_at timestamptz
+  created_at timestamptz [not null]
+
+  Note: 'Mensagem privada. O remetente precisa participar da conversa.'
+}
+
+Table challenges {
+  id bigserial [pk, increment]
+  title varchar(150) [not null]
+  description text [not null]
+  statement text [not null]
+  difficulty varchar(20) [not null, note: 'facil, medio ou dificil']
+  points integer [not null]
+  starts_at timestamptz
+  ends_at timestamptz
+  created_by bigint [ref: > users.id]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+
+  Note: 'Desafio de programação.'
+}
+
+Table challenge_participants {
+  challenge_id bigint [not null, ref: > challenges.id]
+  user_id bigint [not null, ref: > users.id]
+  joined_at timestamptz [not null]
+
+  indexes {
+    (challenge_id, user_id) [pk]
+  }
+
+  Note: 'Participação do usuário em um desafio.'
+}
+
+Table solutions {
+  id bigserial [pk, increment]
+  challenge_id bigint [not null, ref: > challenges.id]
+  user_id bigint [not null, ref: > users.id]
+  source_code text [not null]
+  language varchar(40) [not null]
+  status varchar(20) [not null, note: 'enviada, em_analise, aceita ou rejeitada']
+  score integer
+  submitted_at timestamptz [not null]
+  evaluated_at timestamptz
+
+  Note: 'Solução enviada por um participante.'
+}
+
+Table rankings {
+  user_id bigint [pk, ref: > users.id]
+  total_points integer [not null]
+  challenges_joined integer [not null]
+  solutions_submitted integer [not null]
+  solutions_accepted integer [not null]
+  position integer [not null]
+  updated_at timestamptz [not null]
+
+  Note: 'Ranking armazenado. Recalculado a partir da participação nos desafios.'
+}
+
+TableGroup perfil {
+  users
+  skills
+  user_skills
+  friends
+  follows
+}
+
+TableGroup publicacoes {
+  posts
+  comments
+  likes
+}
+
+TableGroup grupos {
+  groups
+  group_members
+}
+
+TableGroup mensagens {
+  conversations
+  messages
+}
+
+TableGroup desafios {
+  challenges
+  challenge_participants
+  solutions
+  rankings
+}

@@ -1,0 +1,278 @@
+digraph social_network {
+  graph [
+    rankdir=TB
+    bgcolor="white"
+    pad="0.55"
+    nodesep="0.55"
+    ranksep="1.05"
+    splines=ortho
+    overlap=false
+    dpi=150
+    fontname="Helvetica"
+    fontsize=13
+    label="Rede social de desenvolvedores — diagrama entidade-relacionamento\nPostgreSQL  ·  cardinalidade indicada nas ligações  ·  PK chave primária  ·  FK chave estrangeira  ·  UK único"
+    labelloc=t
+    fontsize=18
+    fontname="Helvetica-Bold"
+  ]
+
+  node [shape=plain, fontname="Helvetica", fontsize=12]
+  edge [fontname="Helvetica", fontsize=11, color="#5D6D7E", fontcolor="#2C3E50", arrowsize=0.75]
+
+  subgraph cluster_perfil {
+    label="Cadastro, habilidades e conexões"
+    fontsize=15
+    fontname="Helvetica-Bold"
+    fontcolor="#1B4F72"
+    color="#1B4F72"
+    style="rounded,filled"
+    fillcolor="#F4F9FC"
+    margin=18
+
+    users [label=<
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#1B4F72">
+        <TR><TD BGCOLOR="#1B4F72"><FONT COLOR="white" POINT-SIZE="14"><B>users</B></FONT></TD></TR>
+        <TR><TD ALIGN="LEFT" BGCOLOR="#D4E6F1"><B>id</B>  PK</TD></TR>
+        <TR><TD ALIGN="LEFT">username  UK</TD></TR>
+        <TR><TD ALIGN="LEFT">email  UK</TD></TR>
+        <TR><TD ALIGN="LEFT">password_hash</TD></TR>
+        <TR><TD ALIGN="LEFT">full_name</TD></TR>
+        <TR><TD ALIGN="LEFT">birth_date</TD></TR>
+        <TR><TD ALIGN="LEFT">phone</TD></TR>
+        <TR><TD ALIGN="LEFT">city</TD></TR>
+        <TR><TD ALIGN="LEFT">state</TD></TR>
+        <TR><TD ALIGN="LEFT">country</TD></TR>
+        <TR><TD ALIGN="LEFT" BGCOLOR="#EAF2F8">job_title</TD></TR>
+        <TR><TD ALIGN="LEFT" BGCOLOR="#EAF2F8">company</TD></TR>
+        <TR><TD ALIGN="LEFT" BGCOLOR="#EAF2F8">education</TD></TR>
+      </TABLE>
+    >]
+
+    skills [label=<
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#1B4F72">
+        <TR><TD BGCOLOR="#1B4F72"><FONT COLOR="white" POINT-SIZE="14"><B>skills</B></FONT></TD></TR>
+        <TR><TD ALIGN="LEFT" BGCOLOR="#D4E6F1"><B>id</B>  PK</TD></TR>
+        <TR><TD ALIGN="LEFT">name  UK</TD></TR>
+        <TR><TD ALIGN="LEFT">category</TD></TR>
+      </TABLE>
+    >]
+
+    user_skills [label=<
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#1B4F72">
+        <TR><TD BGCOLOR="#1B4F72"><FONT COLOR="white" POINT-SIZE="14"><B>user_skills</B></FONT></TD></TR>
+        <TR><TD ALIGN="LEFT" BGCOLOR="#D4E6F1"><B>user_id</B>  PK, FK</TD></TR>
+        <TR><TD ALIGN="LEFT" BGCOLOR="#D4E6F1"><B>skill_id</B>  PK, FK</TD></TR>
+        <TR><TD ALIGN="LEFT">proficiency_level</TD></TR>
+        <TR><TD ALIGN="LEFT">years_of_experience</TD></TR>
+      </TABLE>
+    >]
+
+    friends [label=<
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#1B4F72">
+        <TR><TD BGCOLOR="#1B4F72"><FONT COLOR="white" POINT-SIZE="14"><B>friends</B></FONT></TD></TR>
+        <TR><TD ALIGN="LEFT" BGCOLOR="#D4E6F1"><B>id</B>  PK</TD></TR>
+        <TR><TD ALIGN="LEFT">requester_id  FK</TD></TR>
+        <TR><TD ALIGN="LEFT">addressee_id  FK</TD></TR>
+        <TR><TD ALIGN="LEFT">status</TD></TR>
+      </TABLE>
+    >]
+
+    follows [label=<
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#1B4F72">
+        <TR><TD BGCOLOR="#1B4F72"><FONT COLOR="white" POINT-SIZE="14"><B>follows</B></FONT></TD></TR>
+        <TR><TD ALIGN="LEFT" BGCOLOR="#D4E6F1"><B>follower_id</B>  PK, FK</TD></TR>
+        <TR><TD ALIGN="LEFT" BGCOLOR="#D4E6F1"><B>following_id</B>  PK, FK</TD></TR>
+        <TR><TD ALIGN="LEFT">created_at</TD></TR>
+      </TABLE>
+    >]
+  }
+
+  subgraph cluster_publicacoes {
+    label="Postagens, comentários e curtidas"
+    fontsize=15
+    fontname="Helvetica-Bold"
+    fontcolor="#0E6655"
+    color="#0E6655"
+    style="rounded,filled"
+    fillcolor="#F3FBF8"
+    margin=18
+
+    posts [label=<
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#0E6655">
+        <TR><TD BGCOLOR="#0E6655"><FONT COLOR="white" POINT-SIZE="14"><B>posts</B></FONT></TD></TR>
+        <TR><TD ALIGN="LEFT" BGCOLOR="#D5F5E3"><B>id</B>  PK</TD></TR>
+        <TR><TD ALIGN="LEFT">user_id  FK</TD></TR>
+        <TR><TD ALIGN="LEFT">group_id  FK</TD></TR>
+        <TR><TD ALIGN="LEFT">content</TD></TR>
+        <TR><TD ALIGN="LEFT">link_url</TD></TR>
+      </TABLE>
+    >]
+
+    comments [label=<
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#0E6655">
+        <TR><TD BGCOLOR="#0E6655"><FONT COLOR="white" POINT-SIZE="14"><B>comments</B></FONT></TD></TR>
+        <TR><TD ALIGN="LEFT" BGCOLOR="#D5F5E3"><B>id</B>  PK</TD></TR>
+        <TR><TD ALIGN="LEFT">post_id  FK</TD></TR>
+        <TR><TD ALIGN="LEFT">user_id  FK</TD></TR>
+        <TR><TD ALIGN="LEFT">parent_comment_id  FK</TD></TR>
+        <TR><TD ALIGN="LEFT">content</TD></TR>
+      </TABLE>
+    >]
+
+    likes [label=<
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#0E6655">
+        <TR><TD BGCOLOR="#0E6655"><FONT COLOR="white" POINT-SIZE="14"><B>likes</B></FONT></TD></TR>
+        <TR><TD ALIGN="LEFT" BGCOLOR="#D5F5E3"><B>id</B>  PK</TD></TR>
+        <TR><TD ALIGN="LEFT">user_id  FK</TD></TR>
+        <TR><TD ALIGN="LEFT">post_id  FK</TD></TR>
+        <TR><TD ALIGN="LEFT">comment_id  FK</TD></TR>
+      </TABLE>
+    >]
+  }
+
+  subgraph cluster_grupos {
+    label="Grupos temáticos"
+    fontsize=15
+    fontname="Helvetica-Bold"
+    fontcolor="#1A5276"
+    color="#1A5276"
+    style="rounded,filled"
+    fillcolor="#F4F8FB"
+    margin=18
+
+    groups [label=<
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#1A5276">
+        <TR><TD BGCOLOR="#1A5276"><FONT COLOR="white" POINT-SIZE="14"><B>groups</B></FONT></TD></TR>
+        <TR><TD ALIGN="LEFT" BGCOLOR="#D6EAF8"><B>id</B>  PK</TD></TR>
+        <TR><TD ALIGN="LEFT">name  UK</TD></TR>
+        <TR><TD ALIGN="LEFT">topic</TD></TR>
+        <TR><TD ALIGN="LEFT">description</TD></TR>
+        <TR><TD ALIGN="LEFT">created_by  FK</TD></TR>
+      </TABLE>
+    >]
+
+    group_members [label=<
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#1A5276">
+        <TR><TD BGCOLOR="#1A5276"><FONT COLOR="white" POINT-SIZE="14"><B>group_members</B></FONT></TD></TR>
+        <TR><TD ALIGN="LEFT" BGCOLOR="#D6EAF8"><B>group_id</B>  PK, FK</TD></TR>
+        <TR><TD ALIGN="LEFT" BGCOLOR="#D6EAF8"><B>user_id</B>  PK, FK</TD></TR>
+        <TR><TD ALIGN="LEFT">role</TD></TR>
+      </TABLE>
+    >]
+  }
+
+  subgraph cluster_mensagens {
+    label="Mensagens privadas"
+    fontsize=15
+    fontname="Helvetica-Bold"
+    fontcolor="#6C3483"
+    color="#6C3483"
+    style="rounded,filled"
+    fillcolor="#F9F4FB"
+    margin=18
+
+    conversations [label=<
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#6C3483">
+        <TR><TD BGCOLOR="#6C3483"><FONT COLOR="white" POINT-SIZE="14"><B>conversations</B></FONT></TD></TR>
+        <TR><TD ALIGN="LEFT" BGCOLOR="#F5EEF8"><B>id</B>  PK</TD></TR>
+        <TR><TD ALIGN="LEFT">user_low_id  FK</TD></TR>
+        <TR><TD ALIGN="LEFT">user_high_id  FK</TD></TR>
+      </TABLE>
+    >]
+
+    messages [label=<
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#6C3483">
+        <TR><TD BGCOLOR="#6C3483"><FONT COLOR="white" POINT-SIZE="14"><B>messages</B></FONT></TD></TR>
+        <TR><TD ALIGN="LEFT" BGCOLOR="#F5EEF8"><B>id</B>  PK</TD></TR>
+        <TR><TD ALIGN="LEFT">conversation_id  FK</TD></TR>
+        <TR><TD ALIGN="LEFT">sender_id  FK</TD></TR>
+        <TR><TD ALIGN="LEFT">content</TD></TR>
+        <TR><TD ALIGN="LEFT">read_at</TD></TR>
+      </TABLE>
+    >]
+  }
+
+  subgraph cluster_desafios {
+    label="Desafios e ranking"
+    fontsize=15
+    fontname="Helvetica-Bold"
+    fontcolor="#922B21"
+    color="#922B21"
+    style="rounded,filled"
+    fillcolor="#FDF6F5"
+    margin=18
+
+    challenges [label=<
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#922B21">
+        <TR><TD BGCOLOR="#922B21"><FONT COLOR="white" POINT-SIZE="14"><B>challenges</B></FONT></TD></TR>
+        <TR><TD ALIGN="LEFT" BGCOLOR="#FADBD8"><B>id</B>  PK</TD></TR>
+        <TR><TD ALIGN="LEFT">title</TD></TR>
+        <TR><TD ALIGN="LEFT">difficulty</TD></TR>
+        <TR><TD ALIGN="LEFT">points</TD></TR>
+        <TR><TD ALIGN="LEFT">created_by  FK</TD></TR>
+      </TABLE>
+    >]
+
+    challenge_participants [label=<
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#922B21">
+        <TR><TD BGCOLOR="#922B21"><FONT COLOR="white" POINT-SIZE="14"><B>challenge_participants</B></FONT></TD></TR>
+        <TR><TD ALIGN="LEFT" BGCOLOR="#FADBD8"><B>challenge_id</B>  PK, FK</TD></TR>
+        <TR><TD ALIGN="LEFT" BGCOLOR="#FADBD8"><B>user_id</B>  PK, FK</TD></TR>
+        <TR><TD ALIGN="LEFT">joined_at</TD></TR>
+      </TABLE>
+    >]
+
+    solutions [label=<
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#922B21">
+        <TR><TD BGCOLOR="#922B21"><FONT COLOR="white" POINT-SIZE="14"><B>solutions</B></FONT></TD></TR>
+        <TR><TD ALIGN="LEFT" BGCOLOR="#FADBD8"><B>id</B>  PK</TD></TR>
+        <TR><TD ALIGN="LEFT">challenge_id  FK</TD></TR>
+        <TR><TD ALIGN="LEFT">user_id  FK</TD></TR>
+        <TR><TD ALIGN="LEFT">source_code</TD></TR>
+        <TR><TD ALIGN="LEFT">status</TD></TR>
+        <TR><TD ALIGN="LEFT">score</TD></TR>
+      </TABLE>
+    >]
+
+    rankings [label=<
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#7D6608">
+        <TR><TD BGCOLOR="#7D6608"><FONT COLOR="white" POINT-SIZE="14"><B>rankings</B></FONT></TD></TR>
+        <TR><TD ALIGN="LEFT" BGCOLOR="#FCF3CF"><B>user_id</B>  PK, FK</TD></TR>
+        <TR><TD ALIGN="LEFT">total_points</TD></TR>
+        <TR><TD ALIGN="LEFT">challenges_joined</TD></TR>
+        <TR><TD ALIGN="LEFT">solutions_submitted</TD></TR>
+        <TR><TD ALIGN="LEFT">solutions_accepted</TD></TR>
+        <TR><TD ALIGN="LEFT">position</TD></TR>
+      </TABLE>
+    >]
+  }
+
+  users -> friends [label="1 : N  solicita e recebe"]
+  users -> follows [label="1 : N  segue e é seguido"]
+  users -> user_skills [label="1 : N"]
+  skills -> user_skills [label="1 : N"]
+
+  users -> posts [label="1 : N  publica"]
+  users -> comments [label="1 : N  escreve"]
+  users -> likes [label="1 : N  curte"]
+  posts -> comments [label="1 : N"]
+  posts -> likes [label="1 : N"]
+  comments -> likes [label="1 : N"]
+  comments -> comments [label="1 : N  responde"]
+
+  users -> groups [label="1 : N  cria"]
+  users -> group_members [label="1 : N  participa"]
+  groups -> group_members [label="1 : N"]
+  groups -> posts [label="1 : N  publica no grupo"]
+
+  users -> conversations [label="1 : N"]
+  conversations -> messages [label="1 : N"]
+  users -> messages [label="1 : N  envia"]
+
+  users -> challenges [label="1 : N  cria"]
+  users -> challenge_participants [label="1 : N  participa"]
+  challenges -> challenge_participants [label="1 : N"]
+  users -> solutions [label="1 : N  envia"]
+  challenges -> solutions [label="1 : N"]
+  users -> rankings [label="1 : 1"]
+}
