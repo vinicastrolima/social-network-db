@@ -45,6 +45,10 @@ sql/
 README.md
 ```
 
+## Documento de Requisitos do Produto
+
+O PRD do projeto DevConnect está disponível em [`docs/PRD.md`](docs/PRD.md). Ele descreve o MVP, requisitos, gestão do projeto e a funcionalidade de conversa privada com armazenamento em MongoDB.
+
 ## Processo obrigatório de desenvolvimento
 
 Toda correção, melhoria ou nova função deve seguir este fluxo:
