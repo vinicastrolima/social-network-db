@@ -45,6 +45,25 @@ sql/
 README.md
 ```
 
+## Processo obrigatório de desenvolvimento
+
+Toda correção, melhoria ou nova função deve seguir este fluxo:
+
+1. Criar uma Issue no GitHub descrevendo o problema, objetivo, escopo e critérios de aceitação.
+2. Criar uma branch a partir da Issue e implementar a mudança somente nela.
+3. Abrir um Pull Request para revisão e deploy. A descrição do PR deve mencionar a Issue com `Closes #N` ou `Fixes #N`.
+4. Executar as validações automatizadas antes da revisão. Deploy direto na branch principal não é permitido.
+
+### Motion e experiência de interface
+
+Quando houver interface, seguir a skill [Design Motion Principles](https://github.com/kylezantos/design-motion-principles), aplicando movimento com propósito e respeitando `prefers-reduced-motion`. Toda interface deve prever skeleton durante carregamento, lazy loading quando aplicável, animações suaves de entrada e saída, estados de carregamento e progresso para elementos que executem operações demoradas.
+
+### Observabilidade, qualidade e testes
+
+As entregas devem considerar observabilidade com OpenTelemetry e integração com Sentry, Datadog ou New Relic conforme o ambiente. O pipeline deve verificar qualidade e lint com ferramentas adequadas ao stack, como ArchUnit/contract tests, Biome, Commitlint, Knip e Stryker. Toda mudança deve incluir testes unitários, de integração e end-to-end quando aplicável, com cobertura publicada no Codecov e cenários automatizados com Playwright.
+
+Essas regras são obrigatórias para qualquer agente ou modelo que contribuir neste projeto.
+
 ## Como criar o banco
 
 No terminal, com o PostgreSQL no ar:
