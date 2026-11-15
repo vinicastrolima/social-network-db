@@ -502,4 +502,4 @@ Depois da solução aceita, a Ana fica com 115 pontos: 10 pela participação, 5
 - [Izabelle Luna](https://github.com/zabeluna)
 - [Joseph Cavalcante](https://github.com/usrJosephC)
 - [Anthony Gabriel](https://github.com/AnthonyGabrielAA)
-- [Vinicius](https://github.com/vinicastrolima)
+- [Vinicius Castro](https://github.com/vinicastrolima)
