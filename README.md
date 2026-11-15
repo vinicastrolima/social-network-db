@@ -1,5 +1,39 @@
 # Rede social — banco de dados
 
+## Entrega final em desenvolvimento
+
+Consulte o [plano de implementação e auditoria](docs/IMPLEMENTATION_PLAN.md)
+e o [Project público](https://github.com/users/usrJosephC/projects/3).
+Esta primeira etapa disponibiliza os bancos locais; API, interface e chat ainda
+estão pendentes e serão implementados conforme o plano.
+
+### Iniciar os bancos locais
+
+Requisitos: Docker Desktop iniciado, com suporte a Docker Compose.
+Na raiz do repositório, copie `.env.example` para `.env` e configure as senhas:
+
+```powershell
+Copy-Item .env.example .env
+docker compose up -d --wait
+docker compose ps
+```
+
+PostgreSQL: `localhost:5434`, banco `social_network`, usuário `devconnect`.
+MongoDB: `localhost:27018`, banco `devconnect`, usuário `devconnect`,
+autenticação em `admin`. Use as senhas do seu `.env`.
+Estas credenciais administrativas são apenas para desenvolvimento local;
+um deploy precisa de usuários próprios com privilégios mínimos.
+
+Os volumes preservam dados ao executar `docker compose down`.
+Não use `down -v` para parar a aplicação: essa opção apaga os bancos.
+Os scripts de inicialização só rodam em volumes vazios. Não reexecute o SQL
+manualmente sobre dados importantes: ele remove e recria as tabelas.
+
+O chat novo usará as coleções `conversations` e `messages` do MongoDB.
+As tabelas SQL de mensagens são parte do modelo legado e não serão usadas
+pela funcionalidade NoSQL. A inicialização MongoDB inclui validators,
+índice único do par e índice de ordenação/paginação de mensagens.
+
 Modelagem relacional de uma rede social para desenvolvedores. O banco guarda o cadastro pessoal e profissional, as postagens, as interações, as mensagens privadas, os grupos temáticos, os desafios de programação e o ranking.
 
 SGBD: **PostgreSQL 14 ou superior**.
