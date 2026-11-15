@@ -1,0 +1,9 @@
+{
+  "files": { "includes": ["server/**", "public/**", "tests/**"] },
+  "formatter": { "enabled": true, "indentStyle": "space" },
+  "linter": {
+    "enabled": true,
+    "rules": { "preset": "recommended", "a11y": { "noAutofocus": "off" } }
+  },
+  "assist": { "actions": { "source": { "organizeImports": "on" } } }
+}

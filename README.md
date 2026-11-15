@@ -1,22 +1,27 @@
 # Rede social — banco de dados
 
-## Entrega final em desenvolvimento
+## Executar a entrega final
 
 Consulte o [plano de implementação e auditoria](docs/IMPLEMENTATION_PLAN.md)
 e o [Project público](https://github.com/users/usrJosephC/projects/3).
-Esta primeira etapa disponibiliza os bancos locais; API, interface e chat ainda
-estão pendentes e serão implementados conforme o plano.
+A aplicação inclui cadastro/login, perfis e habilidades, amizades e bloqueio,
+publicações, comentários, grupos, desafios, ranking e chat privado em MongoDB.
+Veja o [roteiro de demonstração e testes](docs/DELIVERY.md) e o
+[contrato da API](docs/API.md).
 
-### Iniciar os bancos locais
+### Iniciar a aplicação e os bancos
 
 Requisitos: Docker Desktop iniciado, com suporte a Docker Compose.
 Na raiz do repositório, copie `.env.example` para `.env` e configure as senhas:
 
 ```powershell
 Copy-Item .env.example .env
-docker compose up -d --wait
+docker compose up -d --build --wait
 docker compose ps
 ```
+
+Abra **http://localhost:3000** e crie sua conta. Use uma janela anônima para a
+segunda conta. Não há usuários ou senhas de demonstração fixos.
 
 PostgreSQL: `localhost:5434`, banco `social_network`, usuário `devconnect`.
 MongoDB: `localhost:27018`, banco `devconnect`, usuário `devconnect`,
@@ -29,10 +34,39 @@ Não use `down -v` para parar a aplicação: essa opção apaga os bancos.
 Os scripts de inicialização só rodam em volumes vazios. Não reexecute o SQL
 manualmente sobre dados importantes: ele remove e recria as tabelas.
 
-O chat novo usará as coleções `conversations` e `messages` do MongoDB.
-As tabelas SQL de mensagens são parte do modelo legado e não serão usadas
+O chat usa as coleções `conversations` e `messages` do MongoDB.
+As tabelas SQL de mensagens são parte do modelo legado e não são usadas
 pela funcionalidade NoSQL. A inicialização MongoDB inclui validators,
 índice único do par e índice de ordenação/paginação de mensagens.
+
+### Desenvolvimento e qualidade
+
+Node.js 22+ é necessário apenas para desenvolvimento fora do container:
+
+```sh
+npm ci
+docker compose up -d --wait postgres mongo
+npm start
+```
+
+Não execute `npm start` junto com o container `app` na mesma porta.
+Para editar localmente, pare apenas a aplicação com `docker compose stop app`.
+
+```sh
+npm run lint
+npm test
+npm run test:integration
+npx playwright install chromium
+npm run test:e2e
+npm run coverage
+npx knip
+npx stryker run
+```
+
+Os testes de integração removem somente as fixtures que criam. Os testes E2E
+criam contas com nomes únicos e deixam esse histórico local como evidência.
+O CI usa bancos descartáveis. O pipeline executa lint, testes e E2E e tenta
+publicar cobertura no Codecov; configure `CODECOV_TOKEN` caso o serviço exija.
 
 Modelagem relacional de uma rede social para desenvolvedores. O banco guarda o cadastro pessoal e profissional, as postagens, as interações, as mensagens privadas, os grupos temáticos, os desafios de programação e o ranking.
 

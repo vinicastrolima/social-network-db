@@ -1,0 +1,1 @@
+{"testRunner":"command","commandRunner":{"command":"npm test"},"mutate":["server/domain.js"],"coverageAnalysis":"off","reporters":["clear-text","html"],"concurrency":2,"timeoutMS":20000,"thresholds":{"high":80,"low":50,"break":80}}

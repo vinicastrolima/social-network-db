@@ -1,5 +1,13 @@
 # Entrega final — plano de implementação
 
+## Atualização de execução — 15/11/2026
+
+As etapas de API, interface, chat e testes foram implementadas na branch única
+`feat/final-delivery`, para revisão em PR destinado a `dev`. O fluxo completo
+executa localmente em Docker Compose; ver [DELIVERY.md](DELIVERY.md) para roteiro,
+limites e evidências. A auditoria abaixo preserva a situação encontrada antes
+da implementação, não o estado atual da aplicação.
+
 Auditoria em 14/11/2026. Prazo mostrado na atividade: 16/11/2026 às 06h.
 Alvo: demonstração local reproduzível; deploy público é opcional.
 
