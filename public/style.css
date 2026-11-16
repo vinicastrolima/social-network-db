@@ -256,6 +256,10 @@ small,
 .post p {
   white-space: pre-wrap;
 }
+.challenge-statement {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
 .post header {
   display: flex;
   gap: 12px;

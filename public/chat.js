@@ -8,9 +8,16 @@ export async function chatView(
   notice,
   startPoll,
   isActive,
+  initialConversation,
 ) {
   const list = await api("/conversations");
   if (!isActive()) return;
+  if (
+    initialConversation &&
+    !list.some((c) => c._id === initialConversation._id)
+  ) {
+    list.unshift(initialConversation);
+  }
   el.innerHTML = `<h1>Conversas</h1><p class="muted">Conversas privadas com suas conexões. Atualização a cada 3 segundos.</p><div class="chat-layout"><aside class="panel conversation-list" aria-label="Conversas">${list.map((c) => `<button class="secondary" data-conversation="${c._id}">${esc(c.peer?.full_name || "Usuário")}</button>`).join("") || "<p>Vá em Conexões e aceite uma amizade para iniciar.</p>"}</aside><section class="panel" id="thread"><div class="empty">Selecione uma conversa.</div></section></div>`;
   let selected = null,
     cursor = null,
@@ -84,5 +91,7 @@ export async function chatView(
     await poll();
   });
   startPoll(poll);
-  if (list.length) document.querySelector("[data-conversation]").click();
+  const initialId = initialConversation?._id ?? list[0]?._id;
+  if (initialId)
+    el.querySelector(`[data-conversation="${initialId}"]`)?.click();
 }

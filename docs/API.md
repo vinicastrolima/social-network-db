@@ -44,6 +44,11 @@ a mensagem persistida; corpo diferente com a mesma chave retorna 409. O bloqueio
 impede novos envios; os participantes mantêm acesso ao histórico anterior.
 Usuários externos recebem 404 e não descobrem conteúdo/participantes pela rota.
 
+Ao enviar uma solução, o participante recebe 201 quando a submissão é criada.
+Se o mesmo participante reenviar o mesmo código na mesma linguagem para o
+mesmo desafio, a API retorna 200 com a submissão existente. Um envio com código
+ou linguagem diferente cria uma submissão e conta normalmente no ranking.
+
 Erros: 400 validação, 401 sessão, 403 autorização/origem, 404 recurso não visível,
 409 conflito, 429 limite, 503 indisponibilidade. Respostas de erro incluem
 `requestId`; logs não contêm corpo, cookies, senha ou conteúdo de mensagens.

@@ -268,13 +268,16 @@ test("fluxo real: amizade, chat NoSQL, autorização, paginação, idempotência
     });
     assert.equal(challenge.status, 201);
     await call(b.cookie, `/challenges/${challenge.body.id}/join`, "POST");
-    const solution = await call(
-      b.cookie,
-      `/challenges/${challenge.body.id}/solutions`,
-      "POST",
-      { source_code: "SELECT 1;", language: "sql" },
-    );
-    assert.equal(solution.status, 201);
+    const solutionPath = `/challenges/${challenge.body.id}/solutions`;
+    const submission = { source_code: "SELECT 1;", language: "sql" };
+    const [retry, solution] = (
+      await Promise.all([
+        call(b.cookie, solutionPath, "POST", submission),
+        call(b.cookie, solutionPath, "POST", submission),
+      ])
+    ).sort((first, second) => first.status - second.status);
+    assert.deepEqual([retry.status, solution.status], [200, 201]);
+    assert.equal(retry.body.id, solution.body.id);
     assert.equal(
       (
         await call(c.cookie, `/solutions/${solution.body.id}`, "PATCH", {
@@ -296,6 +299,12 @@ test("fluxo real: amizade, chat NoSQL, autorização, paginação, idempotência
       ranking.body.find((r) => r.user_id === b.body.id).total_points,
       115,
     );
+    const revised = await call(b.cookie, solutionPath, "POST", {
+      ...submission,
+      source_code: "SELECT 2;",
+    });
+    assert.equal(revised.status, 201);
+    assert.notEqual(revised.body.id, solution.body.id);
     assert.equal(
       (
         await call(a.cookie, "/skills", "POST", {

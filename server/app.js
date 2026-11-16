@@ -529,21 +529,46 @@ export function createApp(
     res.json({ ok: true });
   });
   app.post("/api/challenges/:id/solutions", async (req, res) => {
-    res
-      .status(201)
-      .json(
-        (
-          await pool.query(
-            "INSERT INTO solutions(challenge_id,user_id,source_code,language) VALUES($1,$2,$3,$4) RETURNING *",
-            [
-              id(req.params.id),
-              req.uid,
-              text(req.body.source_code, 15000),
-              text(req.body.language, 40),
-            ],
-          )
-        ).rows[0],
+    const key = [id(req.params.id), req.uid];
+    const values = [
+      ...key,
+      text(req.body.source_code, 15000),
+      text(req.body.language, 40),
+    ];
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN ISOLATION LEVEL READ COMMITTED");
+      // Serialize submissions for this participant before checking for a retry.
+      const participant = await client.query(
+        "SELECT 1 FROM challenge_participants WHERE challenge_id=$1 AND user_id=$2 FOR NO KEY UPDATE",
+        key,
       );
+      if (!participant.rowCount)
+        fail(
+          409,
+          "É necessário participar do desafio antes de enviar uma solução.",
+        );
+      const { rows } = await client.query(
+        "SELECT * FROM solutions WHERE challenge_id=$1 AND user_id=$2 AND source_code=$3 AND language=$4 ORDER BY id LIMIT 1",
+        values,
+      );
+      const existing = rows[0];
+      const solution =
+        existing ??
+        (
+          await client.query(
+            "INSERT INTO solutions(challenge_id,user_id,source_code,language) VALUES($1,$2,$3,$4) RETURNING *",
+            values,
+          )
+        ).rows[0];
+      await client.query("COMMIT");
+      res.status(existing ? 200 : 201).json(solution);
+    } catch (e) {
+      await client.query("ROLLBACK");
+      throw e;
+    } finally {
+      client.release();
+    }
   });
   app.get("/api/ranking", async (_req, res) => {
     res.json(

@@ -107,7 +107,7 @@ function shell() {
   });
   navigate(screen);
 }
-export async function navigate(page) {
+export async function navigate(page, conversation) {
   screen = page;
   clearInterval(timer);
   const v = ++version;
@@ -143,6 +143,7 @@ export async function navigate(page) {
           timer = setInterval(callback, 3000);
         },
         () => version === v,
+        conversation,
       );
     }
     if (["groups", "challenges", "ranking"].includes(page))
@@ -152,7 +153,7 @@ export async function navigate(page) {
       content.innerHTML = `<div class="panel error-text">${esc(e.message)} <button id="retry">Tentar novamente</button></div>`;
     document
       .querySelector("#retry")
-      ?.addEventListener("click", () => navigate(page));
+      ?.addEventListener("click", () => navigate(page, conversation));
   } finally {
     content.classList.remove("loading-view");
   }
@@ -212,8 +213,16 @@ async function people(el, q = "") {
     await people(el, q);
   });
   action("[data-chat]", async (b) => {
-    await api("/conversations", "POST", { userId: b.dataset.chat });
-    await navigate("chat");
+    const userId = b.dataset.chat;
+    const conversation = await api("/conversations", "POST", { userId });
+    if (!b.isConnected) return;
+    const friend = friends.find(
+      (f) => f.requester_id === userId || f.addressee_id === userId,
+    );
+    await navigate("chat", {
+      _id: conversation._id,
+      peer: { full_name: friend?.full_name },
+    });
   });
   action("[data-follow]", async (b) => {
     await api(`/users/${b.dataset.follow}/follow`, "POST");
@@ -246,7 +255,7 @@ async function community(el, page) {
     return;
   }
   const groups = page === "groups";
-  el.innerHTML = `<h1>${groups ? "Grupos" : "Desafios"}</h1><p class="muted">${groups ? "Encontre sua comunidade de interesse." : "Pratique, compartilhe soluções e aprenda junto."}</p><details class="panel"><summary>${groups ? "Criar grupo" : "Criar desafio"}</summary><form id="create">${field(groups ? "Nome" : "Título", groups ? "name" : "title")}${groups ? field("Tecnologia ou assunto", "topic") : ""}${area("Descrição", "description")}${groups ? "" : area("Enunciado", "statement")}<button>Criar</button></form></details><div class="grid">${data.map((d) => `<article class="panel"><h2>${esc(d.name || d.title)}</h2><p>${esc(d.description)}</p><small>${esc(d.topic || "100 pontos por solução aceita")}</small><div class="actions"><button data-join="${d.id}" ${d.joined ? "disabled" : ""}>${d.joined ? "Participando" : "Participar"}</button></div>${d.joined ? `<details><summary>${groups ? "Publicar no grupo" : "Enviar solução"}</summary><form id="entry-${d.id}">${groups ? area("Publicação", "content") : area("Código da solução", "source_code") + field("Linguagem", "language")}<button>Enviar</button></form></details>` : ""}</article>`).join("") || '<div class="empty">Crie o primeiro e convide a comunidade.</div>'}</div>`;
+  el.innerHTML = `<h1>${groups ? "Grupos" : "Desafios"}</h1><p class="muted">${groups ? "Encontre sua comunidade de interesse." : "Pratique, compartilhe soluções e aprenda junto."}</p><details class="panel"><summary>${groups ? "Criar grupo" : "Criar desafio"}</summary><form id="create">${field(groups ? "Nome" : "Título", groups ? "name" : "title")}${groups ? field("Tecnologia ou assunto", "topic") : ""}${area("Descrição", "description")}${groups ? "" : area("Enunciado", "statement")}<button>Criar</button></form></details><div class="grid">${data.map((d) => `<article class="panel"><h2>${esc(d.name || d.title)}</h2><p>${esc(d.description)}</p><small>${esc(d.topic || "100 pontos por solução aceita")}</small>${groups ? "" : `<details><summary>Enunciado</summary><p class="challenge-statement">${esc(d.statement)}</p></details>`}<div class="actions"><button data-join="${d.id}" ${d.joined ? "disabled" : ""}>${d.joined ? "Participando" : "Participar"}</button></div>${d.joined ? `<details><summary>${groups ? "Publicar no grupo" : "Enviar solução"}</summary><form id="entry-${d.id}">${groups ? area("Publicação", "content") : area("Código da solução", "source_code") + field("Linguagem", "language")}<button>Enviar</button></form></details>` : ""}</article>`).join("") || '<div class="empty">Crie o primeiro e convide a comunidade.</div>'}</div>`;
   form("create", async (value) => {
     await api(`/${page}`, "POST", value);
     await navigate(page);
@@ -285,7 +294,7 @@ async function community(el, page) {
         "POST",
         groups ? { ...value, group_id: d.id } : value,
       );
-      notice(groups ? "Publicação criada." : "Solução enviada para avaliação.");
+      notice(groups ? "Publicação criada." : "Solução registrada.");
     });
 }
 document.addEventListener("keydown", () =>
