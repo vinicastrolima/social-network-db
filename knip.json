@@ -1,0 +1,1 @@
+{"entry":["public/app.js","tests/**/*.js"],"project":["server/**/*.js","public/**/*.js","tests/**/*.js"],"ignoreDependencies":["@stryker-mutator/command-runner"],"ignoreExportsUsedInFile":true}

@@ -1,6 +1,10 @@
 # PRD — DevConnect
 
-**Versão:** 1.0 · **Status:** Planejamento · **Data:** 19/10/2026
+**Versão:** 1.1 · **Status:** Implementação da entrega final · **Atualização:** 15/11/2026
+
+O planejamento original é de 19/10/2026. A execução local e as evidências da
+entrega final estão em [DELIVERY.md](DELIVERY.md); o contrato concretizado está
+em [API.md](API.md). A revisão final do grupo ocorre pelo PR para `dev`.
 
 ## 1. Visão do produto
 
@@ -112,11 +116,10 @@ Coleção `conversations`:
 
 ```json
 {
-  "_id": "conv_01",
-  "participantIds": ["usr_01", "usr_02"],
-  "createdAt": "2026-10-19T12:00:00Z",
-  "lastMessageAt": "2026-10-19T12:05:00Z",
-  "lastMessagePreview": "Vamos revisar o desafio?"
+  "_id": {"$oid": "650000000000000000000001"},
+  "pairKey": "1:2",
+  "participantIds": ["1", "2"],
+  "createdAt": {"$date": "2026-10-19T12:00:00Z"}
 }
 ```
 
@@ -124,13 +127,12 @@ Coleção `messages`:
 
 ```json
 {
-  "_id": "msg_01",
-  "conversationId": "conv_01",
-  "senderId": "usr_01",
+  "_id": {"$oid": "650000000000000000000002"},
+  "conversationId": {"$oid": "650000000000000000000001"},
+  "senderId": "1",
   "body": "Vamos revisar o desafio?",
-  "createdAt": "2026-10-19T12:05:00Z",
-  "editedAt": null,
-  "status": "sent"
+  "createdAt": {"$date": "2026-10-19T12:05:00Z"},
+  "clientMessageId": "d8676ced-78aa-4ce7-8ae5-1ca846c876db"
 }
 ```
 
@@ -206,6 +208,9 @@ PostgreSQL 14+, MongoDB 7+, ambiente de execução da API, autenticação, defin
 
 O GitHub Project público organiza as Issues por status **A fazer**, **Em andamento** e **Concluído**, com prioridade e responsável. Cada mudança será feita em branch própria e revisada por Pull Request vinculado à Issue. A equipe fará uma revisão semanal do backlog e registrará bloqueios nas Issues.
 
-## 6. Fora desta entrega
+## 6. Etapas da entrega
 
-Esta entrega é exclusivamente de planejamento. Não é necessário implementar a aplicação, APIs, telas ou bancos. O resultado esperado é este PRD, o backlog organizado no GitHub e os links públicos para avaliação.
+A etapa inicial era exclusivamente de planejamento. A entrega final exige a
+aplicação com chat NoSQL e organização no GitHub, demonstrável localmente ou por
+deploy. Foi escolhida a execução local via Docker Compose. Chamadas de áudio/vídeo,
+anexos e conversas em grupo continuam fora do escopo.
